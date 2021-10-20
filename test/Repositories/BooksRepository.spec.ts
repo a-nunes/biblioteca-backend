@@ -6,6 +6,7 @@ import test from 'japa'
 test('BooksRepository', () => {
   let book: BookDTO
   let sut: BooksRepository
+  let booksAfterDeletion: Book[]
 
   test.group('update', (group) => {
     let newBook: BookDTO
@@ -50,8 +51,6 @@ test('BooksRepository', () => {
   })
 
   test.group('delete', (group) => {
-    let booksAfterDeletion: Book[]
-
     group.before(() => {
       booksAfterDeletion = [
         {
@@ -75,6 +74,12 @@ test('BooksRepository', () => {
       const books = sut.list()
 
       assert.deepEqual(books, booksAfterDeletion)
+    })
+  })
+
+  test.group('list', () => {
+    test('assert it list all books properly', (assert) => {
+      assert.deepEqual(sut.list(), booksAfterDeletion)
     })
   })
 })
