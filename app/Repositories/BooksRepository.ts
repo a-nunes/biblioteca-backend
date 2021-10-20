@@ -7,7 +7,7 @@ export default class BooksRepository {
   public add({ authors, image, publisher, title }: BookDTO): Book[] {
     id += 1
     const book: Book = {
-      id: id,
+      id,
       titulo: title,
       editora: publisher,
       foto: image,
@@ -19,5 +19,15 @@ export default class BooksRepository {
 
   public list() {
     return books
+  }
+
+  public update(id: number, { authors, image, publisher, title }: BookDTO): Book {
+    const book = books.find((book) => book.id === id)
+    book!.titulo = title
+    book!.editora = publisher
+    book!.foto = image
+    book!.autores = authors
+
+    return book!
   }
 }
