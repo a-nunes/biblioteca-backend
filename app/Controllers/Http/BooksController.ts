@@ -27,5 +27,9 @@ export default class BooksController {
     response.status(200).json(updatedBook)
   }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ request, response }: HttpContextContract) {
+    const id = parseInt(request.param('id'))
+    const books = this.booksRepository.delete(id)
+    response.status(200).json(books)
+  }
 }
