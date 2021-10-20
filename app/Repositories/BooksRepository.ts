@@ -21,18 +21,19 @@ export default class BooksRepository {
     return books
   }
 
-  public update(id: number, { authors, image, publisher, title }: BookDTO): Book {
+  public update(id: number, { authors, image, publisher, title }: BookDTO): Book | undefined {
     const book = books.find((book) => book.id === id)
-    book!.titulo = title
-    book!.editora = publisher
-    book!.foto = image
-    book!.autores = authors
-    return book!
+    if (!book) return undefined
+    book.titulo = title
+    book.editora = publisher
+    book.foto = image
+    book.autores = authors
+    return book
   }
 
-  public delete(id: number): Book[] {
+  public delete(id: number): void | undefined {
     const bookIndex = books.findIndex((book) => book.id === id)
+    if (bookIndex < 0) return undefined
     books.splice(bookIndex, 1)
-    return books
   }
 }
