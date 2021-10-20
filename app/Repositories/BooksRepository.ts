@@ -27,7 +27,12 @@ export default class BooksRepository {
     book!.editora = publisher
     book!.foto = image
     book!.autores = authors
-
     return book!
+  }
+
+  public delete(id: number): Book[] {
+    const bookIndex = books.findIndex((book) => book.id === id)
+    books.splice(bookIndex, 1)
+    return books
   }
 }
