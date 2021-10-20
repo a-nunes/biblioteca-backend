@@ -22,3 +22,4 @@ import Route from '@ioc:Adonis/Core/Route'
 
 Route.post('/obras', 'BooksController.store')
 Route.get('/obras', 'BooksController.index')
+Route.put('/obras/:id', 'BooksController.update')
