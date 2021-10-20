@@ -8,9 +8,8 @@ test('BooksRepository', () => {
   let sut: BooksRepository
   let booksAfterDeletion: Book[]
 
-  test.group('update', (group) => {
-    let newBook: BookDTO
-    let updatedBook: Book
+  test.group('add', (group) => {
+    let bookBeforeDeletion: Book
 
     group.before(() => {
       book = {
@@ -19,6 +18,30 @@ test('BooksRepository', () => {
         image: 'https://i.imgur.com/UH3IPXw.jpg',
         authors: ['J. K. Rowling', '...'],
       }
+      bookBeforeDeletion = {
+        id: 1,
+        titulo: 'Harry Potter 4',
+        editora: 'Rocco',
+        foto: 'https://i.imgur.com/UH3IPXw.jpg',
+        autores: ['J. K. Rowling', '...'],
+      }
+    })
+
+    group.beforeEach(() => {
+      sut = new BooksRepository()
+    })
+
+    test('assert add returns correct book after insert', (assert) => {
+      const result = sut.add(book)
+      assert.deepEqual(result, bookBeforeDeletion)
+    })
+  })
+
+  test.group('update', (group) => {
+    let newBook: BookDTO
+    let updatedBook: Book
+
+    group.before(() => {
       newBook = {
         title: 'Harry Potter 5',
         publisher: 'Rocco 1',
@@ -34,17 +57,12 @@ test('BooksRepository', () => {
       }
     })
 
-    group.beforeEach(() => {
-      sut = new BooksRepository()
-    })
-
     test('assert update returns undefined if book is not found', (assert) => {
-      const result = sut.update(1, book)
+      const result = sut.update(2, book)
       assert.isUndefined(result)
     })
 
     test('assert update returns updated book if its found', (assert) => {
-      sut.add(book)
       const result = sut.update(1, newBook)
       assert.deepEqual(result, updatedBook)
     })
