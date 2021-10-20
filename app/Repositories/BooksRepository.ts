@@ -4,7 +4,7 @@ import { Book } from 'App/Models/Book'
 let books: Book[] = []
 let id = 0
 export default class BooksRepository {
-  public add({ authors, image, publisher, title }: BookDTO): Book[] {
+  public add({ authors, image, publisher, title }: BookDTO): Book {
     id += 1
     const book: Book = {
       id,
@@ -14,7 +14,7 @@ export default class BooksRepository {
       autores: authors,
     }
     books.push(book)
-    return books
+    return books[books.length - 1]
   }
 
   public list() {
