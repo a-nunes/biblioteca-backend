@@ -4,10 +4,11 @@ import BooksRepository from 'App/Repositories/BooksRepository'
 import test from 'japa'
 
 test('BooksRepository', () => {
+  let book: BookDTO
+  let sut: BooksRepository
+
   test.group('delete', (group) => {
     let booksAfterDeletion: Book[]
-    let book: BookDTO
-    let sut: BooksRepository
 
     group.before(() => {
       book = {
@@ -43,6 +44,13 @@ test('BooksRepository', () => {
       const books = sut.list()
 
       assert.deepEqual(books, booksAfterDeletion)
+    })
+  })
+
+  test.group('update', (group) => {
+    test('assert update returns undefined if book is not found', (assert) => {
+      const result = sut.update(1, book)
+      assert.isUndefined(result)
     })
   })
 })
