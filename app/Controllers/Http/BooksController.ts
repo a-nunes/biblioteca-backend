@@ -20,7 +20,12 @@ export default class BooksController {
     response.status(201).json(books)
   }
 
-  public async update({}: HttpContextContract) {}
+  public async update({ request, response }: HttpContextContract) {
+    const book = request.body() as BookDTO
+    const id = parseInt(request.param('id'))
+    const updatedBook = this.booksRepository.update(id, book)
+    response.status(200).json(updatedBook)
+  }
 
   public async destroy({}: HttpContextContract) {}
 }
