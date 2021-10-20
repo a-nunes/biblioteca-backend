@@ -9,9 +9,12 @@ export default class BooksController {
     this.booksRepository = new BooksRepository()
   }
 
-  public async index({}: HttpContextContract) {}
+  public async index({ response }: HttpContextContract) {
+    const books = this.booksRepository.list()
+    response.status(200).json(books)
+  }
 
-  public async create({ request, response }: HttpContextContract) {
+  public async store({ request, response }: HttpContextContract) {
     const book = request.body() as BookDTO
     const books = this.booksRepository.add(book)
     response.status(201).json(books)

@@ -16,4 +16,8 @@ export default class BooksRepository {
     books.push(book)
     return books
   }
+
+  public list() {
+    return books
+  }
 }
