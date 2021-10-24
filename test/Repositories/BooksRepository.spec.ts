@@ -2,6 +2,7 @@ import BooksRepository from 'App/Repositories/BooksRepository'
 import bookFactory from '../Factories/Book'
 
 import test from 'japa'
+import AssetsManager from '@ioc:Adonis/Core/AssetsManager'
 
 test.group('add', (group) => {
   let booksRepository: BooksRepository
@@ -17,6 +18,7 @@ test.group('add', (group) => {
   test('assert last book in books correct', (assert) => {
     const params = bookFactory.build()
     const book = booksRepository.add(params)
+
     const books = booksRepository.list()
 
     assert.deepEqual(books[books.length - 1], book)
@@ -89,8 +91,27 @@ test.group('delete', (group) => {
   })
 })
 
-// test.group('list', () => {
-//   test('assert it list all books properly', (assert) => {
-//     assert.deepEqual(booksRepository.list(), booksAfterDeletion)
-//   })
-// })
+test.group('update', (group) => {
+  let booksRepository: BooksRepository
+
+  group.before(() => {
+    booksRepository = BooksRepository.getInstance()
+  })
+
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
+  test('assert update returns undefined if book is not found', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
+    const updatedParams = bookFactory.build({ title: 'Harry Potter', publisher: 'Rocco' })
+
+    const updatedBook = booksRepository.update(2, updatedParams)
+    const books = booksRepository.list()
+
+    assert.isUndefined(updatedBook)
+    assert.include(books, book)
+    assert.deepEqual(books.length, 1)
+  })
+})
