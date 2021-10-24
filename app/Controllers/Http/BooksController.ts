@@ -6,7 +6,7 @@ export default class BooksController {
   private readonly booksRepository: BooksRepository
 
   constructor() {
-    this.booksRepository = new BooksRepository()
+    this.booksRepository = BooksRepository.getInstance()
   }
 
   public async index({ response }: HttpContextContract) {
