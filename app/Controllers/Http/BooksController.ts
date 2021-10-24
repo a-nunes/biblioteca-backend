@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { BookDTO } from 'App/Dto/BookDTO'
+import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
 
 export default class BooksController {
@@ -15,13 +16,15 @@ export default class BooksController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const book = request.body() as BookDTO
+    const params = request.body() as BookDTO
+    const book = new BookParser(params).parse()
     const books = this.booksRepository.add(book)
     response.status(201).json(books)
   }
 
   public async update({ request, response }: HttpContextContract) {
-    const book = request.body() as BookDTO
+    const params = request.body() as BookDTO
+    const book = new BookParser(params).parse()
     const id = parseInt(request.param('id'))
     const updatedBook = this.booksRepository.update(id, book)
     response.status(200).json(updatedBook)
