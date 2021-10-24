@@ -45,9 +45,9 @@ test.group('list', (group) => {
   })
 
   test('assert it list all books properly', (assert) => {
-    const params1 = bookFactory.build({ title: 'Harry Potter 1' })
+    const params1 = bookFactory.build({ titulo: 'Harry Potter 1' })
     const book1 = booksRepository.add(params1)
-    const params2 = bookFactory.build({ title: 'Harry Potter 2' })
+    const params2 = bookFactory.build({ titulo: 'Harry Potter 2' })
     const book2 = booksRepository.add(params2)
 
     const books = booksRepository.list()
@@ -104,7 +104,7 @@ test.group('update', (group) => {
   test('assert update returns undefined if book is not found', (assert) => {
     const params = bookFactory.build()
     const book = booksRepository.add(params)
-    const updatedParams = bookFactory.build({ title: 'Harry Potter', publisher: 'Rocco' })
+    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
 
     const updatedBook = booksRepository.update(2, updatedParams)
     const books = booksRepository.list()
@@ -117,7 +117,7 @@ test.group('update', (group) => {
   test('assert update returns updated book if its found', (assert) => {
     const params = bookFactory.build()
     booksRepository.add(params)
-    const updatedParams = bookFactory.build({ title: 'Harry Potter', publisher: 'Rocco' })
+    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
 
     const updatedBook = booksRepository.update(1, updatedParams)
 
