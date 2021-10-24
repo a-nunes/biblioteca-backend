@@ -20,6 +20,13 @@ test.group('add', (group) => {
     const books = booksRepository.list()
     assert.deepEqual(books[books.length - 1], book)
   })
+
+  test('assert books length is increment by 1', (assert) => {
+    const params = bookFactory.build()
+    booksRepository.add(params)
+    const books = booksRepository.list()
+    assert.deepEqual(books.length, 1)
+  })
 })
 
 // test.group('delete', (group) => {
