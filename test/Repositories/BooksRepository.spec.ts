@@ -2,7 +2,6 @@ import BooksRepository from 'App/Repositories/BooksRepository'
 import bookFactory from '../Factories/Book'
 
 import test from 'japa'
-import AssetsManager from '@ioc:Adonis/Core/AssetsManager'
 
 test.group('add', (group) => {
   let booksRepository: BooksRepository
@@ -113,5 +112,15 @@ test.group('update', (group) => {
     assert.isUndefined(updatedBook)
     assert.include(books, book)
     assert.deepEqual(books.length, 1)
+  })
+
+  test('assert update returns updated book if its found', (assert) => {
+    const params = bookFactory.build()
+    booksRepository.add(params)
+    const updatedParams = bookFactory.build({ title: 'Harry Potter', publisher: 'Rocco' })
+
+    const updatedBook = booksRepository.update(1, updatedParams)
+
+    assert.deepInclude(updatedBook, { titulo: 'Harry Potter', editora: 'Rocco' })
   })
 })
