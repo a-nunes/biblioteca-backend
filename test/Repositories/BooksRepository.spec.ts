@@ -29,6 +29,27 @@ test.group('add', (group) => {
   })
 })
 
+test.group('list', (group) => {
+  let booksRepository: BooksRepository
+
+  group.before(() => {
+    booksRepository = BooksRepository.getInstance()
+  })
+
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
+  test('assert it list all books properly', (assert) => {
+    const params1 = bookFactory.build({ title: 'Harry Potter 1' })
+    const book1 = booksRepository.add(params1)
+    const params2 = bookFactory.build({ title: 'Harry Potter 2' })
+    const book2 = booksRepository.add(params2)
+    const books = booksRepository.list()
+    assert.deepEqual(books, [book1, book2])
+  })
+})
+
 // test.group('delete', (group) => {
 //   group.before(() => {
 //     booksAfterDeletion = [
