@@ -16,6 +16,7 @@ export default class BooksRepository {
   }
 
   public clear(): Book[] {
+    this.id = 0
     return (this.books = [])
   }
 
