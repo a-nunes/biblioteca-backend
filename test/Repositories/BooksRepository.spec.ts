@@ -20,10 +20,6 @@ test.group('add', (group) => {
     const books = booksRepository.list()
     assert.deepEqual(books[books.length - 1], book)
   })
-
-  test('assert books length is increment by 1', (assert) => {})
-
-  test('assert return is the correct book', (assert) => {})
 })
 
 // test.group('delete', (group) => {
