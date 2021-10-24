@@ -1,15 +1,12 @@
+import { Book } from 'App/Models/Book'
 import BooksRepository from 'App/Repositories/BooksRepository'
 import bookFactory from '../Factories/Book'
 
 import test from 'japa'
 
+const booksRepository = BooksRepository.getInstance()
+
 test.group('add', (group) => {
-  let booksRepository: BooksRepository
-
-  group.before(() => {
-    booksRepository = BooksRepository.getInstance()
-  })
-
   group.afterEach(() => {
     booksRepository.clear()
   })
@@ -34,35 +31,26 @@ test.group('add', (group) => {
 })
 
 test.group('list', (group) => {
-  let booksRepository: BooksRepository
-
-  group.before(() => {
-    booksRepository = BooksRepository.getInstance()
-  })
-
   group.afterEach(() => {
     booksRepository.clear()
   })
 
   test('assert it list all books properly', (assert) => {
-    const params1 = bookFactory.build({ titulo: 'Harry Potter 1' })
-    const book1 = booksRepository.add(params1)
-    const params2 = bookFactory.build({ titulo: 'Harry Potter 2' })
-    const book2 = booksRepository.add(params2)
+    const compareBooks: Book[] = []
+
+    for (let i = 0; i < 10; i++) {
+      const book = bookFactory.build()
+      const doubleBook = booksRepository.add(book)
+      compareBooks.push(doubleBook)
+    }
 
     const books = booksRepository.list()
 
-    assert.deepEqual(books, [book1, book2])
+    assert.deepEqual(books, compareBooks)
   })
 })
 
 test.group('delete', (group) => {
-  let booksRepository: BooksRepository
-
-  group.before(() => {
-    booksRepository = BooksRepository.getInstance()
-  })
-
   group.afterEach(() => {
     booksRepository.clear()
   })
@@ -76,6 +64,7 @@ test.group('delete', (group) => {
 
     assert.isUndefined(result)
     assert.include(books, book)
+    assert.deepEqual(books.length, 1)
   })
 
   test('assert delete remove book if its found', (assert) => {
@@ -91,12 +80,6 @@ test.group('delete', (group) => {
 })
 
 test.group('update', (group) => {
-  let booksRepository: BooksRepository
-
-  group.before(() => {
-    booksRepository = BooksRepository.getInstance()
-  })
-
   group.afterEach(() => {
     booksRepository.clear()
   })
