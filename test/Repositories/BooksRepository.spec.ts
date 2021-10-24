@@ -50,32 +50,34 @@ test.group('list', (group) => {
   })
 })
 
-// test.group('delete', (group) => {
-//   group.before(() => {
-//     booksAfterDeletion = [
-//       {
-//         id: 2,
-//         titulo: 'Harry Potter 4',
-//         editora: 'Rocco',
-//         foto: 'https://i.imgur.com/UH3IPXw.jpg',
-//         autores: ['J. K. Rowling', '...'],
-//       },
-//     ]
-//   })
+test.group('delete', (group) => {
+  let booksRepository: BooksRepository
 
-//   test('assert delete returns undefined if book is not found', (assert) => {
-//     const result = booksRepository.delete(1)
-//     assert.isUndefined(result)
-//   })
+  group.before(() => {
+    booksRepository = BooksRepository.getInstance()
+  })
 
-//   test('assert delete remove book if its found', (assert) => {
-//     booksRepository.add(book)
-//     booksRepository.delete(1)
-//     const books = booksRepository.list()
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
 
-//     assert.deepEqual(books, booksAfterDeletion)
-//   })
-// })
+  test('assert delete returns undefined if book is not found', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
+    const result = booksRepository.delete(2)
+    const books = booksRepository.list()
+    assert.isUndefined(result)
+    assert.include(books, book)
+  })
+
+  // test('assert delete remove book if its found', (assert) => {
+  //   booksRepository.add(book)
+  //   booksRepository.delete(1)
+  //   const books = booksRepository.list()
+
+  //   assert.deepEqual(books, booksAfterDeletion)
+  // })
+})
 
 // test.group('list', () => {
 //   test('assert it list all books properly', (assert) => {
