@@ -1,103 +1,109 @@
-import { BookDTO } from 'App/Dto/BookDTO'
 import { Book } from 'App/Models/Book'
 import BooksRepository from 'App/Repositories/BooksRepository'
+import bookFactory from '../Factories/Book'
+
 import test from 'japa'
 
-test('BooksRepository', () => {
-  let book: BookDTO
-  let sut: BooksRepository
-  let booksAfterDeletion: Book[]
+const booksRepository = BooksRepository.getInstance()
 
-  test.group('add', (group) => {
-    let bookBeforeDeletion: Book
-
-    group.before(() => {
-      book = {
-        title: 'Harry Potter 4',
-        publisher: 'Rocco',
-        image: 'https://i.imgur.com/UH3IPXw.jpg',
-        authors: ['J. K. Rowling', '...'],
-      }
-      bookBeforeDeletion = {
-        id: 1,
-        titulo: 'Harry Potter 4',
-        editora: 'Rocco',
-        foto: 'https://i.imgur.com/UH3IPXw.jpg',
-        autores: ['J. K. Rowling', '...'],
-      }
-    })
-
-    group.beforeEach(() => {
-      sut = new BooksRepository()
-    })
-
-    test('assert add returns correct book after insert', (assert) => {
-      const result = sut.add(book)
-      assert.deepEqual(result, bookBeforeDeletion)
-    })
+test.group('add', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
   })
 
-  test.group('update', (group) => {
-    let newBook: BookDTO
-    let updatedBook: Book
+  test('assert last book in books correct', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
 
-    group.before(() => {
-      newBook = {
-        title: 'Harry Potter 5',
-        publisher: 'Rocco 1',
-        image: 'https://i.imgur.com/UH3IPXw.jpg',
-        authors: ['J. K. Rowling', '...'],
-      }
-      updatedBook = {
-        id: 1,
-        titulo: 'Harry Potter 5',
-        editora: 'Rocco 1',
-        foto: 'https://i.imgur.com/UH3IPXw.jpg',
-        autores: ['J. K. Rowling', '...'],
-      }
-    })
+    const books = booksRepository.list()
 
-    test('assert update returns undefined if book is not found', (assert) => {
-      const result = sut.update(2, book)
-      assert.isUndefined(result)
-    })
-
-    test('assert update returns updated book if its found', (assert) => {
-      const result = sut.update(1, newBook)
-      assert.deepEqual(result, updatedBook)
-    })
+    assert.deepEqual(books[books.length - 1], book)
   })
 
-  test.group('delete', (group) => {
-    group.before(() => {
-      booksAfterDeletion = [
-        {
-          id: 2,
-          titulo: 'Harry Potter 4',
-          editora: 'Rocco',
-          foto: 'https://i.imgur.com/UH3IPXw.jpg',
-          autores: ['J. K. Rowling', '...'],
-        },
-      ]
-    })
+  test('assert books length is increment by 1', (assert) => {
+    const params = bookFactory.build()
+    booksRepository.add(params)
 
-    test('assert delete returns undefined if book is not found', (assert) => {
-      const result = sut.delete(1)
-      assert.isUndefined(result)
-    })
+    const books = booksRepository.list()
 
-    test('assert delete remove book if its found', (assert) => {
-      sut.add(book)
-      sut.delete(1)
-      const books = sut.list()
+    assert.deepEqual(books.length, 1)
+  })
+})
 
-      assert.deepEqual(books, booksAfterDeletion)
-    })
+test.group('list', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
   })
 
-  test.group('list', () => {
-    test('assert it list all books properly', (assert) => {
-      assert.deepEqual(sut.list(), booksAfterDeletion)
-    })
+  test('assert it list all books properly', (assert) => {
+    const compareBooks: Book[] = []
+
+    for (let i = 0; i < 10; i++) {
+      const book = bookFactory.build()
+      const doubleBook = booksRepository.add(book)
+      compareBooks.push(doubleBook)
+    }
+
+    const books = booksRepository.list()
+
+    assert.deepEqual(books, compareBooks)
+  })
+})
+
+test.group('delete', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
+  test('assert delete returns undefined if book is not found', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
+
+    const result = booksRepository.delete(2)
+    const books = booksRepository.list()
+
+    assert.isUndefined(result)
+    assert.include(books, book)
+    assert.deepEqual(books.length, 1)
+  })
+
+  test('assert delete remove book if its found', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
+
+    booksRepository.delete(1)
+    const books = booksRepository.list()
+
+    assert.notInclude(books, book)
+    assert.isEmpty(books)
+  })
+})
+
+test.group('update', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
+  test('assert update returns undefined if book is not found', (assert) => {
+    const params = bookFactory.build()
+    const book = booksRepository.add(params)
+    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
+
+    const updatedBook = booksRepository.update(2, updatedParams)
+    const books = booksRepository.list()
+
+    assert.isUndefined(updatedBook)
+    assert.include(books, book)
+    assert.deepEqual(books.length, 1)
+  })
+
+  test('assert update returns updated book if its found', (assert) => {
+    const params = bookFactory.build()
+    booksRepository.add(params)
+    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
+
+    const updatedBook = booksRepository.update(1, updatedParams)
+
+    assert.deepInclude(updatedBook, { titulo: 'Harry Potter', editora: 'Rocco' })
   })
 })
