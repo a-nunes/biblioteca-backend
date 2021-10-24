@@ -1,29 +1,46 @@
 import { BookDTO } from 'App/Dto/BookDTO'
 import { Book } from 'App/Models/Book'
 
-let books: Book[] = []
-let id = 0
 export default class BooksRepository {
+  private static instance: BooksRepository
+  private books: Book[] = []
+  private id = 0
+
+  private constructor() {}
+
+  public static getInstance(): BooksRepository {
+    if (!BooksRepository.instance) {
+      BooksRepository.instance = new BooksRepository()
+    }
+    return BooksRepository.instance
+  }
+
+  public clear(): Book[] {
+    return (this.books = [])
+  }
+
   public add({ authors, image, publisher, title }: BookDTO): Book {
-    id += 1
+    this.id++
     const book: Book = {
-      id,
+      id: this.id,
       titulo: title,
       editora: publisher,
       foto: image,
       autores: authors,
     }
-    books.push(book)
-    return books[books.length - 1]
+    this.books.push(book)
+    return book
   }
 
   public list() {
-    return books
+    return this.books
   }
 
   public update(id: number, { authors, image, publisher, title }: BookDTO): Book | undefined {
-    const book = books.find((book) => book.id === id)
-    if (!book) return undefined
+    const book = this.books.find((book) => book.id === id)
+    if (!book) {
+      return undefined
+    }
     book.titulo = title
     book.editora = publisher
     book.foto = image
@@ -32,8 +49,8 @@ export default class BooksRepository {
   }
 
   public delete(id: number): void | undefined {
-    const bookIndex = books.findIndex((book) => book.id === id)
+    const bookIndex = this.books.findIndex((book) => book.id === id)
     if (bookIndex < 0) return undefined
-    books.splice(bookIndex, 1)
+    this.books.splice(bookIndex, 1)
   }
 }
