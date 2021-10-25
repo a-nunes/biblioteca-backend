@@ -1,8 +1,9 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { BookDTO } from 'App/Dto/BookDTO'
 import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
 
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { schema } from '@ioc:Adonis/Core/Validator'
 export default class BooksController {
   private readonly booksRepository: BooksRepository
 
@@ -16,10 +17,20 @@ export default class BooksController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const params = request.body() as BookDTO
-    const parsedParams = new BookParser(params).parse()
-    const book = this.booksRepository.add(parsedParams)
-    response.status(201).json(book)
+    const newBookSchema = schema.create({
+      title: schema.string(),
+      publisher: schema.string(),
+      image: schema.string(),
+      authors: schema.array().members(schema.string()),
+    })
+    try {
+      const params = await request.validate({ schema: newBookSchema })
+      const parsedParams = new BookParser(params).parse()
+      const book = this.booksRepository.add(parsedParams)
+      response.status(201).json(book)
+    } catch (error) {
+      response.badRequest(error.messages)
+    }
   }
 
   public async update({ request, response }: HttpContextContract) {
