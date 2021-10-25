@@ -27,4 +27,11 @@ test.group('POST /obras', () => {
       .send(params)
       .expect(201, { ...parsedParams, id: 1 })
   })
+
+  test('ensure returns 400 if validation fails', async (assert) => {
+    const params = bookFactory.build()
+    const { body } = await supertest(BASE_URL).post('/obras').send(params).expect(400)
+
+    assert.include(body.errors[0], { message: 'required validation failed' })
+  })
 })
