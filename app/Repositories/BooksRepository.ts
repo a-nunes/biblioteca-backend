@@ -59,11 +59,12 @@ export default class BooksRepository {
     return book
   }
 
-  public delete(id: number): void | undefined {
+  public delete(id: number): boolean | undefined {
     const bookIndex = this.books.findIndex((book) => book.id === id)
     if (bookIndex < 0) {
       return undefined
     }
     this.books.splice(bookIndex, 1)
+    return true
   }
 }
