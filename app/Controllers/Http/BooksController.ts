@@ -33,16 +33,20 @@ export default class BooksController {
     const parsedParams = new BookParser(params).parse()
     const id = parseInt(request.param('id'))
     const updatedBook = this.booksRepository.update(id, parsedParams)
-    if (updatedBook) {
-      response.status(200).json(updatedBook)
+    if (!updatedBook) {
+      response.status(400).json({ error: 'book was not find' })
       return
     }
-    response.status(400).json({ error: 'book was not find' })
+    response.status(200).json(updatedBook)
   }
 
   public async destroy({ request, response }: HttpContextContract) {
     const id = parseInt(request.param('id'))
-    this.booksRepository.delete(id)
+    const deletedBook = this.booksRepository.delete(id)
+    if (!deletedBook) {
+      response.status(400).json({ error: 'book was not find' })
+      return
+    }
     response.status(204)
   }
 }
