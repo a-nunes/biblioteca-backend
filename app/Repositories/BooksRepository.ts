@@ -22,9 +22,9 @@ export default class BooksRepository {
     return BooksRepository.instance
   }
 
-  public clear(): Book[] {
+  public clear(): void {
     this.id = 0
-    return (this.books = [])
+    this.books = []
   }
 
   public add({ autores, editora, foto, titulo }: BooksRepository.Params): Book {
@@ -52,18 +52,19 @@ export default class BooksRepository {
     if (!book) {
       return undefined
     }
-    book.titulo = titulo
-    book.editora = editora
-    book.foto = foto
-    book.autores = autores
+    book.titulo = titulo ?? book.titulo
+    book.editora = editora ?? book.editora
+    book.foto = foto ?? book.foto
+    book.autores = autores ?? book.autores
     return book
   }
 
-  public delete(id: number): void | undefined {
+  public delete(id: number): boolean | undefined {
     const bookIndex = this.books.findIndex((book) => book.id === id)
     if (bookIndex < 0) {
       return undefined
     }
     this.books.splice(bookIndex, 1)
+    return true
   }
 }

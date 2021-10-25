@@ -1,7 +1,9 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { BookDTO } from 'App/Dto/BookDTO'
 import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
+import { BookSchema } from 'App/Validation/Schemas/BookSchema'
+
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class BooksController {
   private readonly booksRepository: BooksRepository
@@ -16,10 +18,14 @@ export default class BooksController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const params = request.body() as BookDTO
-    const parsedParams = new BookParser(params).parse()
-    const book = this.booksRepository.add(parsedParams)
-    response.status(201).json(book)
+    try {
+      const params = await request.validate({ schema: BookSchema })
+      const parsedParams = new BookParser(params).parse()
+      const book = this.booksRepository.add(parsedParams)
+      response.status(201).json(book)
+    } catch (error) {
+      response.badRequest(error.messages)
+    }
   }
 
   public async update({ request, response }: HttpContextContract) {
@@ -27,12 +33,20 @@ export default class BooksController {
     const parsedParams = new BookParser(params).parse()
     const id = parseInt(request.param('id'))
     const updatedBook = this.booksRepository.update(id, parsedParams)
+    if (!updatedBook) {
+      response.status(400).json({ error: 'book was not found' })
+      return
+    }
     response.status(200).json(updatedBook)
   }
 
   public async destroy({ request, response }: HttpContextContract) {
     const id = parseInt(request.param('id'))
-    this.booksRepository.delete(id)
+    const deletedBook = this.booksRepository.delete(id)
+    if (!deletedBook) {
+      response.status(400).json({ error: 'book was not found' })
+      return
+    }
     response.status(204)
   }
 }
