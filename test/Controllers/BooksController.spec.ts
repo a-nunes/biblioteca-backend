@@ -1,11 +1,14 @@
 import bookFactory from '../Factories/Book'
+import BookParser from 'App/Parsers/BookParser'
+import BooksRepository from 'App/Repositories/BooksRepository'
 
 import test from 'japa'
 import supertest from 'supertest'
 import faker from 'faker'
-import BookParser from 'App/Parsers/BookParser'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
+
+const booksRepository = BooksRepository.getInstance()
 
 test.group('GET /obras', () => {
   test('ensure returns 200 on success', async () => {
@@ -13,7 +16,11 @@ test.group('GET /obras', () => {
   })
 })
 
-test.group('POST /obras', () => {
+test.group('POST /obras', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
   test('ensure returns 201 and book on success', async () => {
     const params = {
       title: faker.lorem.words(2),
