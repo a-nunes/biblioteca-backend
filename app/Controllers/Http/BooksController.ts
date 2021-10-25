@@ -34,7 +34,7 @@ export default class BooksController {
     const id = parseInt(request.param('id'))
     const updatedBook = this.booksRepository.update(id, parsedParams)
     if (!updatedBook) {
-      response.status(400).json({ error: 'book was not find' })
+      response.status(400).json({ error: 'book was not found' })
       return
     }
     response.status(200).json(updatedBook)
@@ -44,7 +44,7 @@ export default class BooksController {
     const id = parseInt(request.param('id'))
     const deletedBook = this.booksRepository.delete(id)
     if (!deletedBook) {
-      response.status(400).json({ error: 'book was not find' })
+      response.status(400).json({ error: 'book was not found' })
       return
     }
     response.status(204)
