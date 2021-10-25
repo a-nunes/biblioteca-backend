@@ -69,4 +69,22 @@ test.group('PUT /obras', (group) => {
   test('ensure returns 400 and error if book do not exists', async () => {
     await supertest(BASE_URL).put('/obras/1').expect(400, { error: 'book was not find' })
   })
+
+  test.group('DELETE /obras', (group) => {
+    group.afterEach(() => {
+      booksRepository.clear()
+    })
+
+    test('ensure returns 204 on success', async () => {
+      const params = {
+        title: faker.lorem.words(2),
+        publisher: faker.company.companyName(),
+        image: faker.internet.url(),
+        authors: [faker.name.findName()],
+      }
+      await supertest(BASE_URL).post('/obras').send(params)
+
+      await supertest(BASE_URL).delete('/obras/1').expect(204)
+    })
+  })
 })
