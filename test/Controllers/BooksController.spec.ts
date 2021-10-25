@@ -29,6 +29,7 @@ test.group('POST /obras', (group) => {
       authors: [faker.name.findName()],
     }
     const parsedParams = new BookParser(params).parse()
+
     await supertest(BASE_URL)
       .post('/obras')
       .send(params)
@@ -37,8 +38,31 @@ test.group('POST /obras', (group) => {
 
   test('ensure returns 400 if validation fails', async (assert) => {
     const params = bookFactory.build()
+
     const { body } = await supertest(BASE_URL).post('/obras').send(params).expect(400)
 
     assert.include(body.errors[0], { message: 'required validation failed' })
+  })
+})
+
+test.group('PUT /obras', (group) => {
+  group.afterEach(() => {
+    booksRepository.clear()
+  })
+
+  test('ensure returns 200 and book on success', async () => {
+    const params = {
+      title: faker.lorem.words(2),
+      publisher: faker.company.companyName(),
+      image: faker.internet.url(),
+      authors: [faker.name.findName()],
+    }
+    const { body } = await supertest(BASE_URL).post('/obras').send(params)
+    const updatedParams = { title: 'Harry Potter' }
+
+    await supertest(BASE_URL)
+      .put('/obras/1')
+      .send(updatedParams)
+      .expect(200, { ...body, titulo: 'Harry Potter' })
   })
 })
