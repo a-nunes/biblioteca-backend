@@ -65,4 +65,8 @@ test.group('PUT /obras', (group) => {
       .send(updatedParams)
       .expect(200, { ...body, titulo: 'Harry Potter' })
   })
+
+  test('ensure returns 400 and error if book do not exists', async () => {
+    await supertest(BASE_URL).put('/obras/1').expect(400, { error: 'book was not find' })
+  })
 })
