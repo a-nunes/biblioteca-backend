@@ -87,4 +87,8 @@ test.group('PUT /obras', (group) => {
       await supertest(BASE_URL).delete('/obras/1').expect(204)
     })
   })
+
+  test('ensure returns 400 and error if book do not exists', async () => {
+    await supertest(BASE_URL).delete('/obras/1').expect(400, { error: 'book was not find' })
+  })
 })
