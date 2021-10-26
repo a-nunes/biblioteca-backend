@@ -1,12 +1,11 @@
 import bookFactory from '../Factories/Book'
 import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
+import { BASE_URL } from '../Setup'
 
 import test from 'japa'
 import supertest from 'supertest'
 import faker from 'faker'
-
-const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 
 const booksRepository = BooksRepository.getInstance()
 
