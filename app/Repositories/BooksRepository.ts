@@ -1,39 +1,65 @@
-import { BookDTO } from 'App/Dto/BookDTO'
 import { Book } from 'App/Models/Book'
 
-let books: Book[] = []
-let id = 0
+export namespace BooksRepository {
+  export type Params = {
+    titulo: string
+    editora: string
+    foto: string
+    autores: string[]
+  }
+}
 export default class BooksRepository {
-  public add({ authors, image, publisher, title }: BookDTO): Book {
-    id += 1
-    const book: Book = {
-      id,
-      titulo: title,
-      editora: publisher,
-      foto: image,
-      autores: authors,
+  private static instance: BooksRepository
+  private books: Book[] = []
+  private id = 0
+  private ATTRIBUTES = ['titulo', 'editora', 'foto', 'autores']
+
+  private permittedParams(params: BooksRepository.Params) {
+    const validEntries = Object.entries(params).filter(
+      ([key, value]) => this.ATTRIBUTES.includes(key) && !!value
+    )
+    return Object.fromEntries(validEntries)
+  }
+
+  private constructor() {}
+
+  public static getInstance(): BooksRepository {
+    if (!BooksRepository.instance) {
+      BooksRepository.instance = new BooksRepository()
     }
-    books.push(book)
-    return books[books.length - 1]
+    return BooksRepository.instance
   }
 
-  public list() {
-    return books
+  public clear(): void {
+    this.id = 0
+    this.books = []
   }
 
-  public update(id: number, { authors, image, publisher, title }: BookDTO): Book | undefined {
-    const book = books.find((book) => book.id === id)
-    if (!book) return undefined
-    book.titulo = title
-    book.editora = publisher
-    book.foto = image
-    book.autores = authors
+  public add(params: BooksRepository.Params): Book {
+    this.id++
+    const book: Book = { id: this.id, ...(this.permittedParams(params) as BooksRepository.Params) }
+    this.books.push(book)
     return book
   }
 
-  public delete(id: number): void | undefined {
-    const bookIndex = books.findIndex((book) => book.id === id)
-    if (bookIndex < 0) return undefined
-    books.splice(bookIndex, 1)
+  public list() {
+    return this.books
+  }
+
+  public update(id: number, params: BooksRepository.Params): Book {
+    let book = this.books.find((book) => book.id === id)
+    if (!book) {
+      throw new Error('book was not found')
+    }
+    book = { ...book, ...(this.permittedParams(params) as BooksRepository.Params) }
+    return book
+  }
+
+  public delete(id: number): void {
+    const bookIndex = this.books.findIndex((book) => book.id === id)
+    if (bookIndex < 0) {
+      throw new Error('book was not found')
+    }
+    this.books.splice(bookIndex, 1)
   }
 }
