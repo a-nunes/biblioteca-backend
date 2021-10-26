@@ -7,7 +7,7 @@ import test from 'japa'
 const booksRepository = BooksRepository.getInstance()
 
 test.group('add', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
@@ -31,7 +31,7 @@ test.group('add', (group) => {
 })
 
 test.group('list', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
@@ -51,18 +51,18 @@ test.group('list', (group) => {
 })
 
 test.group('delete', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
-  test('assert delete returns undefined if book is not found', (assert) => {
+  test('assert delete throws if book is not found', (assert) => {
     const params = bookFactory.build()
     const book = booksRepository.add(params)
 
-    const result = booksRepository.delete(2)
+    const result = () => booksRepository.delete(2)
     const books = booksRepository.list()
 
-    assert.isUndefined(result)
+    assert.throws(result, 'book was not found')
     assert.include(books, book)
     assert.deepEqual(books.length, 1)
   })
@@ -80,19 +80,19 @@ test.group('delete', (group) => {
 })
 
 test.group('update', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
-  test('assert update returns undefined if book is not found', (assert) => {
+  test('assert update throws if book is not found', (assert) => {
     const params = bookFactory.build()
     const book = booksRepository.add(params)
     const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
 
-    const updatedBook = booksRepository.update(2, updatedParams)
+    const updatedBook = () => booksRepository.update(2, updatedParams)
     const books = booksRepository.list()
 
-    assert.isUndefined(updatedBook)
+    assert.throws(updatedBook, 'book was not found')
     assert.include(books, book)
     assert.deepEqual(books.length, 1)
   })
