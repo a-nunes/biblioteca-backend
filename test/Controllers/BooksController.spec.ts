@@ -17,7 +17,7 @@ test.group('GET /obras', () => {
 })
 
 test.group('POST /obras', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
@@ -46,7 +46,7 @@ test.group('POST /obras', (group) => {
 })
 
 test.group('PUT /obras', (group) => {
-  group.afterEach(() => {
+  group.beforeEach(() => {
     booksRepository.clear()
   })
 
@@ -95,7 +95,7 @@ test.group('PUT /obras', (group) => {
   })
 
   test.group('DELETE /obras', (group) => {
-    group.afterEach(() => {
+    group.beforeEach(() => {
       booksRepository.clear()
     })
 
