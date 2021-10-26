@@ -28,7 +28,7 @@ test.group('POST /obras', (group) => {
       image: faker.internet.url(),
       authors: [faker.name.findName()],
     }
-    const parsedParams = new BookParser(params).parse()
+    const parsedParams = new BookParser().parse(params)
 
     await supertest(BASE_URL)
       .post('/obras')
@@ -58,7 +58,7 @@ test.group('PUT /obras', (group) => {
       authors: [faker.name.findName()],
     }
     const { body } = await supertest(BASE_URL).post('/obras').send(params)
-    const updatedParams = { title: 'Harry Potter' }
+    const updatedParams = { ...params, title: 'Harry Potter' }
 
     await supertest(BASE_URL)
       .put('/obras/1')
@@ -66,8 +66,32 @@ test.group('PUT /obras', (group) => {
       .expect(200, { ...body, titulo: 'Harry Potter' })
   })
 
+  test('ensure returns 422 if validation fails', async (assert) => {
+    const params = {
+      title: faker.lorem.words(2),
+      publisher: faker.company.companyName(),
+      image: faker.internet.url(),
+      authors: [faker.name.findName()],
+    }
+    await supertest(BASE_URL).post('/obras').send(params)
+    const updatedParams = { title: 'Harry Potter' }
+
+    const { body } = await supertest(BASE_URL).put('/obras/1').send(updatedParams).expect(422)
+
+    assert.include(body.errors[0], { message: 'required validation failed' })
+  })
+
   test('ensure returns 400 and error if book do not exists', async () => {
-    await supertest(BASE_URL).put('/obras/1').expect(400, { error: 'book was not found' })
+    const params = {
+      title: faker.lorem.words(2),
+      publisher: faker.company.companyName(),
+      image: faker.internet.url(),
+      authors: [faker.name.findName()],
+    }
+    await supertest(BASE_URL)
+      .put('/obras/1')
+      .send(params)
+      .expect(400, { error: 'book was not found' })
   })
 
   test.group('DELETE /obras', (group) => {

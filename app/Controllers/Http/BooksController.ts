@@ -1,9 +1,9 @@
-import { BookDTO } from 'App/Dto/BookDTO'
 import BookParser from 'App/Parsers/BookParser'
-import BooksRepository from 'App/Repositories/BooksRepository'
+import BooksRepository, { BooksRepository as Books } from 'App/Repositories/BooksRepository'
 import { BookSchema } from 'App/Validation/Schemas/BookSchema'
 
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { RequestContract } from '@ioc:Adonis/Core/Request'
 
 export default class BooksController {
   private readonly booksRepository: BooksRepository
@@ -19,9 +19,8 @@ export default class BooksController {
 
   public async store({ request, response }: HttpContextContract) {
     try {
-      const params = await request.validate({ schema: BookSchema })
-      const parsedParams = new BookParser(params).parse()
-      const book = this.booksRepository.add(parsedParams)
+      const params = await this.permitedParams(request)
+      const book = this.booksRepository.add(params)
       response.status(201).json(book)
     } catch (error) {
       response.badRequest(error.messages)
@@ -29,10 +28,9 @@ export default class BooksController {
   }
 
   public async update({ request, response }: HttpContextContract) {
-    const params = request.body() as BookDTO
-    const parsedParams = new BookParser(params).parse()
     const id = parseInt(request.param('id'))
-    const updatedBook = this.booksRepository.update(id, parsedParams)
+    const params = await this.permitedParams(request)
+    const updatedBook = this.booksRepository.update(id, params)
     if (!updatedBook) {
       response.status(400).json({ error: 'book was not found' })
       return
@@ -48,5 +46,10 @@ export default class BooksController {
       return
     }
     response.status(204)
+  }
+
+  private async permitedParams(request: RequestContract): Promise<Books.Params> {
+    const params = await request.validate({ schema: BookSchema })
+    return new BookParser().parse(params)
   }
 }
