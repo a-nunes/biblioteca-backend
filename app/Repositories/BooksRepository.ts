@@ -44,13 +44,10 @@ export default class BooksRepository {
     return this.books
   }
 
-  public update(
-    id: number,
-    { autores, editora, foto, titulo }: BooksRepository.Params
-  ): Book | undefined {
+  public update(id: number, { autores, editora, foto, titulo }: BooksRepository.Params): Book {
     const book = this.books.find((book) => book.id === id)
     if (!book) {
-      return undefined
+      throw new Error('book was not found')
     }
     book.titulo = titulo ?? book.titulo
     book.editora = editora ?? book.editora
@@ -59,12 +56,11 @@ export default class BooksRepository {
     return book
   }
 
-  public delete(id: number): boolean | undefined {
+  public delete(id: number): void {
     const bookIndex = this.books.findIndex((book) => book.id === id)
     if (bookIndex < 0) {
-      return undefined
+      throw new Error('book was not found')
     }
     this.books.splice(bookIndex, 1)
-    return true
   }
 }
