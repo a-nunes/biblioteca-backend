@@ -37,12 +37,11 @@ test.group('list', (group) => {
 
   test('assert it list all books properly', (assert) => {
     const compareBooks: Book[] = []
-
-    for (let i = 0; i < 10; i++) {
-      const book = bookFactory.build()
+    const booksList = bookFactory.buildList(10)
+    booksList.forEach((book) => {
       const doubleBook = booksRepository.add(book)
       compareBooks.push(doubleBook)
-    }
+    })
 
     const books = booksRepository.list()
 
