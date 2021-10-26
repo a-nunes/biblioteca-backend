@@ -7,7 +7,6 @@ import { Book } from 'App/Models/Book'
 
 import test from 'japa'
 import supertest from 'supertest'
-import faker from 'faker'
 
 const booksRepository = BooksRepository.getInstance()
 
@@ -30,12 +29,7 @@ test.group('POST /obras', (group) => {
   })
 
   test('ensure returns 201 and book on success', async () => {
-    const params = {
-      title: faker.lorem.words(2),
-      publisher: faker.company.companyName(),
-      image: faker.internet.url(),
-      authors: [faker.name.findName()],
-    }
+    const params = bookRawFactory.build()
     const parsedParams = new BookParser().parse(params)
 
     await supertest(BASE_URL)
@@ -62,7 +56,6 @@ test.group('PUT /obras', (group) => {
     const params = bookRawFactory.build()
     const parsedParams = new BookParser().parse(params)
     const book = booksRepository.add(parsedParams)
-
     const updatedParams = { ...params, title: 'Harry Potter' }
 
     await supertest(BASE_URL)
