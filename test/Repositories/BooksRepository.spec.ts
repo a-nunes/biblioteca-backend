@@ -1,6 +1,6 @@
 import { Book } from 'App/Models/Book'
 import BooksRepository from 'App/Repositories/BooksRepository'
-import bookFactory from '../Factories/Book'
+import bookParsedFactory from '../Factories/BookParsed'
 
 import test from 'japa'
 
@@ -12,7 +12,7 @@ test.group('add', (group) => {
   })
 
   test('assert last book in books correct', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     const book = booksRepository.add(params)
 
     const books = booksRepository.list()
@@ -21,7 +21,7 @@ test.group('add', (group) => {
   })
 
   test('assert books length is increment by 1', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     booksRepository.add(params)
 
     const books = booksRepository.list()
@@ -37,7 +37,7 @@ test.group('list', (group) => {
 
   test('assert it list all books properly', (assert) => {
     const compareBooks: Book[] = []
-    const booksList = bookFactory.buildList(10)
+    const booksList = bookParsedFactory.buildList(10)
     booksList.forEach((book) => {
       const doubleBook = booksRepository.add(book)
       compareBooks.push(doubleBook)
@@ -55,7 +55,7 @@ test.group('delete', (group) => {
   })
 
   test('assert delete throws if book is not found', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     const book = booksRepository.add(params)
 
     const result = () => booksRepository.delete(2)
@@ -67,7 +67,7 @@ test.group('delete', (group) => {
   })
 
   test('assert delete remove book if its found', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     const book = booksRepository.add(params)
 
     booksRepository.delete(1)
@@ -84,9 +84,9 @@ test.group('update', (group) => {
   })
 
   test('assert update throws if book is not found', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     const book = booksRepository.add(params)
-    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
+    const updatedParams = bookParsedFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
 
     const updatedBook = () => booksRepository.update(2, updatedParams)
     const books = booksRepository.list()
@@ -97,9 +97,9 @@ test.group('update', (group) => {
   })
 
   test('assert update returns updated book if its found', (assert) => {
-    const params = bookFactory.build()
+    const params = bookParsedFactory.build()
     booksRepository.add(params)
-    const updatedParams = bookFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
+    const updatedParams = bookParsedFactory.build({ titulo: 'Harry Potter', editora: 'Rocco' })
 
     const updatedBook = booksRepository.update(1, updatedParams)
 
