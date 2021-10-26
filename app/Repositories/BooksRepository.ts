@@ -12,6 +12,14 @@ export default class BooksRepository {
   private static instance: BooksRepository
   private books: Book[] = []
   private id = 0
+  private ATTRIBUTES = ['titulo', 'editora', 'foto', 'autores']
+
+  private permittedParams(params: BooksRepository.Params) {
+    const validEntries = Object.entries(params).filter(
+      ([key, value]) => this.ATTRIBUTES.includes(key) && !!value
+    )
+    return Object.fromEntries(validEntries)
+  }
 
   private constructor() {}
 
@@ -27,15 +35,9 @@ export default class BooksRepository {
     this.books = []
   }
 
-  public add({ autores, editora, foto, titulo }: BooksRepository.Params): Book {
+  public add(params: BooksRepository.Params): Book {
     this.id++
-    const book: Book = {
-      id: this.id,
-      titulo,
-      editora,
-      foto,
-      autores,
-    }
+    const book: Book = { id: this.id, ...(this.permittedParams(params) as BooksRepository.Params) }
     this.books.push(book)
     return book
   }
@@ -44,15 +46,12 @@ export default class BooksRepository {
     return this.books
   }
 
-  public update(id: number, { autores, editora, foto, titulo }: BooksRepository.Params): Book {
-    const book = this.books.find((book) => book.id === id)
+  public update(id: number, params: BooksRepository.Params): Book {
+    let book = this.books.find((book) => book.id === id)
     if (!book) {
       throw new Error('book was not found')
     }
-    book.titulo = titulo ?? book.titulo
-    book.editora = editora ?? book.editora
-    book.foto = foto ?? book.foto
-    book.autores = autores ?? book.autores
+    book = { ...book, ...(this.permittedParams(params) as BooksRepository.Params) }
     return book
   }
 
