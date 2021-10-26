@@ -1,4 +1,5 @@
-import bookFactory from '../Factories/Book'
+import bookParsedFactory from '../Factories/BookParsed'
+import bookRawFactory from '../Factories/BookRaw'
 import { BASE_URL } from '../Setup'
 import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
@@ -13,7 +14,7 @@ const booksRepository = BooksRepository.getInstance()
 test.group('GET /obras', () => {
   test('ensure returns 200 on success', async () => {
     const compareBooks: Book[] = []
-    const booksList = bookFactory.buildList(10)
+    const booksList = bookParsedFactory.buildList(10)
     booksList.forEach((book) => {
       const doubleBook = booksRepository.add(book)
       compareBooks.push(doubleBook)
@@ -44,7 +45,7 @@ test.group('POST /obras', (group) => {
   })
 
   test('ensure returns 400 if validation fails', async (assert) => {
-    const params = bookFactory.build()
+    const params = bookRawFactory.build({ title: undefined })
 
     const { body } = await supertest(BASE_URL).post('/obras').send(params).expect(400)
 
@@ -58,30 +59,23 @@ test.group('PUT /obras', (group) => {
   })
 
   test('ensure returns 200 and book on success', async () => {
-    const params = {
-      title: faker.lorem.words(2),
-      publisher: faker.company.companyName(),
-      image: faker.internet.url(),
-      authors: [faker.name.findName()],
-    }
-    const { body } = await supertest(BASE_URL).post('/obras').send(params)
+    const params = bookRawFactory.build()
+    const parsedParams = new BookParser().parse(params)
+    const book = booksRepository.add(parsedParams)
+
     const updatedParams = { ...params, title: 'Harry Potter' }
 
     await supertest(BASE_URL)
       .put('/obras/1')
       .send(updatedParams)
-      .expect(200, { ...body, titulo: 'Harry Potter' })
+      .expect(200, { ...book, titulo: 'Harry Potter' })
   })
 
   test('ensure returns 400 if validation fails', async (assert) => {
-    const params = {
-      title: faker.lorem.words(2),
-      publisher: faker.company.companyName(),
-      image: faker.internet.url(),
-      authors: [faker.name.findName()],
-    }
-    await supertest(BASE_URL).post('/obras').send(params)
-    const updatedParams = { title: 'Harry Potter' }
+    const params = bookRawFactory.build()
+    const parsedParams = new BookParser().parse(params)
+    booksRepository.add(parsedParams)
+    const updatedParams = { ...params, title: undefined }
 
     const { body } = await supertest(BASE_URL).put('/obras/1').send(updatedParams).expect(400)
 
