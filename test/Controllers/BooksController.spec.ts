@@ -1,7 +1,8 @@
 import bookFactory from '../Factories/Book'
+import { BASE_URL } from '../Setup'
 import BookParser from 'App/Parsers/BookParser'
 import BooksRepository from 'App/Repositories/BooksRepository'
-import { BASE_URL } from '../Setup'
+import { Book } from 'App/Models/Book'
 
 import test from 'japa'
 import supertest from 'supertest'
@@ -11,7 +12,14 @@ const booksRepository = BooksRepository.getInstance()
 
 test.group('GET /obras', () => {
   test('ensure returns 200 on success', async () => {
-    await supertest(BASE_URL).get('/obras').expect(200)
+    const compareBooks: Book[] = []
+    const booksList = bookFactory.buildList(10)
+    booksList.forEach((book) => {
+      const doubleBook = booksRepository.add(book)
+      compareBooks.push(doubleBook)
+    })
+
+    await supertest(BASE_URL).get('/obras').expect(200, compareBooks)
   })
 })
 
