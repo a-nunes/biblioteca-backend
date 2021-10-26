@@ -83,12 +83,8 @@ test.group('PUT /obras', (group) => {
   })
 
   test('ensure returns 400 and error if book do not exists', async () => {
-    const params = {
-      title: faker.lorem.words(2),
-      publisher: faker.company.companyName(),
-      image: faker.internet.url(),
-      authors: [faker.name.findName()],
-    }
+    const params = bookRawFactory.build()
+
     await supertest(BASE_URL)
       .put('/obras/1')
       .send(params)
