@@ -97,13 +97,8 @@ test.group('PUT /obras', (group) => {
     })
 
     test('ensure returns 204 on success', async () => {
-      const params = {
-        title: faker.lorem.words(2),
-        publisher: faker.company.companyName(),
-        image: faker.internet.url(),
-        authors: [faker.name.findName()],
-      }
-      await supertest(BASE_URL).post('/obras').send(params)
+      const params = bookParsedFactory.build()
+      booksRepository.add(params)
 
       await supertest(BASE_URL).delete('/obras/1').expect(204)
     })
