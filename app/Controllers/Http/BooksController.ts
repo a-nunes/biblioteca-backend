@@ -28,14 +28,18 @@ export default class BooksController {
   }
 
   public async update({ request, response }: HttpContextContract) {
-    const id = parseInt(request.param('id'))
-    const params = await this.permitedParams(request)
-    const updatedBook = this.booksRepository.update(id, params)
-    if (!updatedBook) {
-      response.status(400).json({ error: 'book was not found' })
-      return
+    try {
+      const id = parseInt(request.param('id'))
+      const params = await this.permitedParams(request)
+      const updatedBook = this.booksRepository.update(id, params)
+      if (!updatedBook) {
+        response.status(400).json({ error: 'book was not found' })
+        return
+      }
+      response.status(200).json(updatedBook)
+    } catch (error) {
+      response.badRequest(error.messages)
     }
-    response.status(200).json(updatedBook)
   }
 
   public async destroy({ request, response }: HttpContextContract) {

@@ -66,7 +66,7 @@ test.group('PUT /obras', (group) => {
       .expect(200, { ...body, titulo: 'Harry Potter' })
   })
 
-  test('ensure returns 422 if validation fails', async (assert) => {
+  test('ensure returns 400 if validation fails', async (assert) => {
     const params = {
       title: faker.lorem.words(2),
       publisher: faker.company.companyName(),
@@ -76,7 +76,7 @@ test.group('PUT /obras', (group) => {
     await supertest(BASE_URL).post('/obras').send(params)
     const updatedParams = { title: 'Harry Potter' }
 
-    const { body } = await supertest(BASE_URL).put('/obras/1').send(updatedParams).expect(422)
+    const { body } = await supertest(BASE_URL).put('/obras/1').send(updatedParams).expect(400)
 
     assert.include(body.errors[0], { message: 'required validation failed' })
   })
